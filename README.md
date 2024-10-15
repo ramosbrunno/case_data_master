@@ -11,7 +11,8 @@
 
 <p align="center">
   <a href="#status" alt="Estado do Projeto"><img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=flat" /></a>
-  <a href="https://www.npmjs.com/package/@docusaurus/core"><img src="https://img.shields.io/npm/v/@docusaurus/core.svg?style=flat" alt="npm version"></a>
+   <a href=""><img src="https://img.shields.io/badge/npm-10.8.2-blue" alt="python version"></a>
+  <a href=""><img src="https://img.shields.io/badge/python-3.12.6-green" alt="python version"></a>
 </p>
 
 ## Introdução
@@ -44,6 +45,30 @@ Outras funcionalidades serão adicionadas posteriormente, conforme a demanda.
 - `Criação de Sistema Web`: Será desenvolvido um sistema web para realizar as ingestões, garantindo uma interface amigável e acessível para os usuários.
 - `Arquitetura Cloud`: O sistema web será implementado em um ambiente cloud, assegurando escalabilidade, alta disponibilidade e resiliência.
 - `Utilização do Lakehouse`: Databricks será utilizado como plataforma de dados e base para execução das ingestões.
+
+
+## Requisitos Técnicos
+Os requisitos englobam o desenvolvimento de rotinas para atender aos requisitos funcionais propostos utilizando uma arquitetura cloud e desenvolvimento de rotinas utilizando Python, Spark, SQL, assim como o desenvolvimento de um portal web para interação do usuário.
+
+### Camada de Apresentação
+Para atender aos requisitos funcionais, deverá ser criado um portal web, onde seja possível a interação do usuário de forma simples e possibilite que seja feito as ingestões contempladas nesse projeto apenas fornecendo algumas informações pertinentes.
+Nesse portal também deverá haver KPIs fornecendo informações sobre execuções, consumo e custos estimados das ingestões feitas pelo usuário.
+
+- `Portal`:
+  ![image](https://github.com/user-attachments/assets/9bb110f8-5d56-437d-909a-2beacd5c8c5b)
+
+### Camada de Negócio
+
+#### Camada de Dados
+- `Armazenamento dos Arquivos`: Os arquivos serão armazenados no Storage Account até que o processo de ingestão seja finalizado.
+- `Lakehouse`: Os dados ingeridos na tabela serão armazenados no Storage Account no formato Delta.
+- `KPI`: As informações de KPIs serão recuperadas do Azure Cost Analysis e armazenadas numa tabela do Azure SQL Database.
+- `Log`: O log das ingestões serão armazenados numa tabela do Azure SQL Database.
+
+## Fora de Escopo
+
+- `Tela de Login`: Nesse momento ainda não haverá tela de login ou integração com SSO, pois o portal em si, apesar de ser importante para o projeto, não é o case principal.
+- `Controle de Acesso`: Não será aplicado controle de acesso a tabela, apenas o owner e admin da workspace serão capazes de utilizar os dados ingeridos.
 
 ## Técnicas e tecnologias utilizadas
 
