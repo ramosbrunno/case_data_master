@@ -33,4 +33,24 @@ Outras funcionalidades serão adicionadas posteriormente, conforme a demanda.
 ![image](https://github.com/user-attachments/assets/07e846b5-8efe-496f-b61c-702fa3eab4cc)
 
 
+## Requisitos Funcionais
+
+- `Ingestão de Arquivos CSV`: O sistema deve permitir a ingestão de arquivos CSV por meio de um portal onde o usuário pode fazer o upload do arquivo e especificar o database e a tabela de destino. Atualmente, essa ingestão é realizada através de um processo que exige a movimentação de arquivos entre diretórios de rede e a solicitação de carga de malhas Control-M.
+- `Monitoramento de Custos`: O sistema deve exibir os seguintes indicadores: Custo, Quantidade e Tamanho Total dos arquivos ingeridos pela plataforma.
+
+
+## Requisitos Não Funcionais
+
+- `Criação de Sistema Web`: Será desenvolvido um sistema web para realizar as ingestões, garantindo uma interface amigável e acessível para os usuários.
+- `Arquitetura Cloud`: O sistema web será implementado em um ambiente cloud, assegurando escalabilidade, alta disponibilidade e resiliência.
+- `Utilização do Lakehouse`: Databricks será utilizado como plataforma de dados e base para execução das ingestões.
+
+## Técnicas e tecnologias utilizadas
+
+- ``TypeScript``
+- ``VisualCode``
+- ``Databricks``
+- ``Python``
+- ``Spark``
+- ``Azure``
 
