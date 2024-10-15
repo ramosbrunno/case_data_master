@@ -17,35 +17,35 @@
 
 ## Introdução
 
-DINO é um projeto de plataforma de ingestão de arquivos manuais. O projeto foi idealizado para atender ao Case do Programa Data Master, trazendo uma solução para um problema real das áreas de negócio do banco.
+DINO é uma plataforma para ingestão de arquivos manuais, criada para solucionar um problema recorrente em áreas de negócio. O objetivo principal é otimizar o processo de upload e integração de arquivos em ambientes de big data cloud, oferecendo uma solução escalável e amigável.
 
 
 ## Contexto
 
-Em alguns projetos do banco, há a necessidade de ingestão de arquivos gerados pela área de negócios e/ou por algum fornecedor, cujos dados não necessariamente ocorrem com uma periodicidade ou frequência pré-definida. Ou seja, podem ocorrer uma vez por mês ou cinco vezes por dia.
-No contexto atual desses projetos, os arquivos são disponibilizados em diretórios na rede. Uma rotina realiza a movimentação para um servidor intermediário, e outra rotina envia esse arquivo para o ambiente de big data, onde o dado é utilizado. Nem sempre ele é utilizado como uma tabela, podendo ser usado apenas como um arquivo de parâmetro para uma rotina específica.
+Alguns projetos necessitam da ingestão de arquivos gerados pela área de negócios e/ou por algum fornecedor sem uma periodicidade definida, podendo variar de uma vez por mês a várias vezes por dia. Atualmente, esse processo envolve a movimentação manual de arquivos para diretórios de rede e sua posterior carga em ambientes de big data. Nem todos esses dados são usados como tabelas, alguns são utilizados apenas como parâmetros.
+
 
 ## Proposta
 
-Para atender à necessidade da área de negócios, deverá ser criado um portal no qual o usuário poderá realizar o upload de arquivos. Neste primeiro momento será apresentado apenas uma tela, que possibilitará o upload dos arquivos e acompanhamento dos custos atrelados.
-Outras funcionalidades serão adicionadas posteriormente, conforme a demanda.
+A solução proposta é a criação de um portal web que permite o upload de arquivos diretamente pelos usuários. Inicialmente, o sistema terá uma tela para upload e acompanhamento de custos. Futuramente, outras funcionalidades serão adicionadas de acordo com as necessidades do projeto.
+
 
 ## Arquitetura
+
+A arquitetura do sistema é baseada em tecnologias cloud, utilizando Databricks para processamento de dados e Azure para armazenamento e análise de custos.
 ![image](https://github.com/user-attachments/assets/07e846b5-8efe-496f-b61c-702fa3eab4cc)
 
 
 ## Requisitos Funcionais
 
-- `Ingestão de Arquivos CSV`: O sistema deve permitir a ingestão de arquivos CSV por meio de um portal onde o usuário pode fazer o upload do arquivo e especificar o database e a tabela de destino. Atualmente, essa ingestão é realizada através de um processo que exige a movimentação de arquivos entre diretórios de rede e a solicitação de carga de malhas Control-M.
-- `Monitoramento de Custos`: O sistema deve exibir os seguintes indicadores: Custo, Quantidade e Tamanho Total dos arquivos ingeridos pela plataforma.
+- `Ingestão de Arquivos CSV`: Permitir que o usuário faça o upload de arquivos CSV e especifique o banco de dados e a tabela de destino.
+- `Monitoramento de Custos`: Exibir indicadores como custo total, quantidade de arquivos e o tamanho total dos dados ingeridos.
 
 
 ## Requisitos Não Funcionais
 
-- `Criação de Sistema Web`: Será desenvolvido um sistema web para realizar as ingestões, garantindo uma interface amigável e acessível para os usuários.
-- `Arquitetura Cloud`: O sistema web será implementado em um ambiente cloud, assegurando escalabilidade, alta disponibilidade e resiliência.
-- `Utilização do Lakehouse`: Databricks será utilizado como plataforma de dados e base para execução das ingestões.
-
+- `Sistema Web`: Interface intuitiva para usuários realizarem uploads e acompanharem as ingestões.
+- `Arquitetura Cloud`: Implementação escalável, com alta disponibilidade e resiliência, utilizando serviços da Azure e Databricks.
 
 ## Requisitos Técnicos
 Os requisitos englobam o desenvolvimento de rotinas para atender aos requisitos funcionais propostos utilizando uma arquitetura cloud e desenvolvimento de rotinas utilizando Python, Spark, SQL, assim como o desenvolvimento de um portal web para interação do usuário.
@@ -67,15 +67,11 @@ Nesse portal também deverá haver KPIs fornecendo informações sobre execuçõ
 
 ## Fora de Escopo
 
-- `Tela de Login`: Nesse momento ainda não haverá tela de login ou integração com SSO, pois o portal em si, apesar de ser importante para o projeto, não é o case principal.
-- `Controle de Acesso`: Não será aplicado controle de acesso a tabela, apenas o owner e admin da workspace serão capazes de utilizar os dados ingeridos.
+- `Tela de Login`: No momento, não será implementada uma tela de login.
+- `Controle de Acesso`: Somente o owner e admin da workspace serão capazes de utilizar os dados ingeridos.
 
 ## Técnicas e tecnologias utilizadas
 
-- ``TypeScript``
-- ``VisualCode``
-- ``Databricks``
-- ``Python``
-- ``Spark``
-- ``Azure``
-
+- **Linguagens:** ``Python``, ``TypeScript``
+- **Ferramentas:** ``Visual Studio Code``, ``Databricks``
+- **Tecnologias:** ``Spark``, ``Azure (Storage Account, SQL Database, Cost Analysis)``
