@@ -29,3 +29,8 @@ No contexto atual desses projetos, os arquivos são disponibilizados em diretór
 Para atender à necessidade da área de negócios, deverá ser criado um portal no qual o usuário poderá realizar o upload de arquivos. Neste primeiro momento será apresentado apenas uma tela, que possibilitará o upload dos arquivos e acompanhamento dos custos atrelados.
 Outras funcionalidades serão adicionadas posteriormente, conforme a demanda.
 
+## Arquitetura
+![image](https://github.com/user-attachments/assets/07e846b5-8efe-496f-b61c-702fa3eab4cc)
+
+
+
