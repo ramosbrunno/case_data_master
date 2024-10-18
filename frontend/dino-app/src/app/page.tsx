@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Upload, DollarSign, FileText, HardDrive, X } from 'lucide-react'
-import { uploadToADLS } from '@/lib/azure-upload'
+import { uploadToBlob } from '@/lib/azure-upload'
 import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
 
@@ -46,7 +46,7 @@ export default function DataIngestionPortal() {
 
     for (const file of files) {
       try {
-        const result = await uploadToADLS(file, database, table)
+        const result = await uploadToBlob(file, database, table)
         if (result.success) {
           uploadedFiles++
           uploadedSize += result.size
@@ -99,7 +99,7 @@ export default function DataIngestionPortal() {
       
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Upload Files to Azure ADLS</CardTitle>
+          <CardTitle>Upload Files to Azure Blob Storage</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
