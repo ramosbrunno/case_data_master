@@ -95,11 +95,11 @@ export default function DataIngestionPortal() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Data Ingestion Portal</h1>
+      <h1 className="text-2xl font-bold mb-4">DINO - Data Ingestion Non Optmized</h1>
       
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Upload Files to Azure Blob Storage</CardTitle>
+          <CardTitle>Upload Files to Azure</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
