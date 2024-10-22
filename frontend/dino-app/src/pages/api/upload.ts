@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-blob";
-import { IncomingForm, Fields, Files } from 'formidable';
+import { IncomingForm, Fields } from 'formidable';
 import fs from 'fs';
 
 // Configuração para desativar o bodyParser do Next.js
