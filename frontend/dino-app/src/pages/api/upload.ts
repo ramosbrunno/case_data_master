@@ -3,13 +3,25 @@ import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-bl
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
 
-
 // Configuração para desativar o bodyParser do Next.js
 export const config = {
   api: {
     bodyParser: false,
   },
 }
+
+// Tipos para os campos e arquivos
+type Fields = {
+  database: string[];
+  table: string[];
+};
+
+type Files = {
+  file: {
+    filepath: string;
+    originalFilename: string;
+  }[];
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -18,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const form = new IncomingForm();
-    const [fields, files] = await new Promise((resolve, reject) => {
+    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) return reject(err);
         resolve([fields, files]);
