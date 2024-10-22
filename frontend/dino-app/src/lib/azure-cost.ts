@@ -38,7 +38,7 @@ export async function getCostFromAzure(): Promise<CostDetails> {
           from: startDate, // Enviando como Date
           to: endDate,     // Enviando como Date
         },
-        dataSet: {
+        dataset: {  // Corrigido de dataSet para dataset
           granularity: "None",
           aggregation: {
             totalCost: {
@@ -56,7 +56,7 @@ export async function getCostFromAzure(): Promise<CostDetails> {
       return {
         totalCost: parseFloat(cost as string),
         currency: currency as string,
-        timeframe: `${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`, // Usando objetos Date para exibição
+        timeframe: `${startDate.toISOString()} to ${endDate.toISOString()}`, // Usando objetos Date para exibição
       };
     } else {
       throw new Error("No cost data available");
