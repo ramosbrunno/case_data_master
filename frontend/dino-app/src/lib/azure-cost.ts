@@ -1,5 +1,5 @@
 import { DefaultAzureCredential } from "@azure/identity";
-import { CostManagementClient, QueryResult } from "@azure/arm-costmanagement";
+import { CostManagementClient, QueryResult, CostManagementClientOptionalParams } from "@azure/arm-costmanagement";
 
 interface CostDetails {
   totalCost: number;
@@ -20,7 +20,8 @@ export async function getCostFromAzure(): Promise<CostDetails> {
   const credential = new DefaultAzureCredential();
 
   // Crie um cliente de gerenciamento de custos
-  const client = new CostManagementClient(credential, subscriptionId);
+  const clientOptions: CostManagementClientOptionalParams = { subscriptionId };
+  const client = new CostManagementClient(credential, clientOptions);
 
   // Obter a data atual e a data de 30 dias atrás
   const endDate = new Date();
@@ -38,8 +39,8 @@ export async function getCostFromAzure(): Promise<CostDetails> {
         type: "ActualCost",
         timeframe: "Custom",
         timePeriod: {
-          from: startDate, // Passar como Date
-          to: endDate,     // Passar como Date
+          from: formatDate(startDate),
+          to: formatDate(endDate),
         },
         dataSet: {
           granularity: "None",
