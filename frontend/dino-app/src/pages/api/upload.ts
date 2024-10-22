@@ -10,10 +10,10 @@ export const config = {
   },
 }
 
-// Tipos para os campos e arquivos
+// Definição de tipos para os campos e arquivos
 type Fields = {
-  database: string[];
-  table: string[];
+  database?: string[]; // Tornar opcional para evitar erro
+  table?: string[];    // Tornar opcional para evitar erro
 };
 
 type Files = {
@@ -21,6 +21,11 @@ type Files = {
     filepath: string;
     originalFilename: string;
   }[];
+};
+
+// Verifique se as propriedades existem
+const isFields = (fields: any): fields is Fields => {
+  return fields && Array.isArray(fields.database) && Array.isArray(fields.table);
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -37,9 +42,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     });
 
+    // Verifique se fields contém as propriedades necessárias
+    if (!isFields(fields)) {
+      return res.status(400).json({ message: 'Invalid fields format' });
+    }
+
     const file = files.file[0]; // O arquivo enviado
-    const database = fields.database[0]; // O nome do banco de dados
-    const table = fields.table[0]; // O nome da tabela
+    const database = fields.database ? fields.database[0] : undefined; // O nome do banco de dados
+    const table = fields.table ? fields.table[0] : undefined; // O nome da tabela
 
     if (!file || !database || !table) {
       return res.status(400).json({ message: 'Missing required fields' });
