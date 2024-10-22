@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-blob";
-import { IncomingForm } from 'formidable';
+import { IncomingForm, Fields, Files } from 'formidable';
 import fs from 'fs';
 
 // Configuração para desativar o bodyParser do Next.js
@@ -8,15 +8,15 @@ export const config = {
   api: {
     bodyParser: false,
   },
-}
-
-// Definição de tipos para os campos e arquivos
-type Fields = {
-  database?: string[]; // Tornar opcional para evitar erro
-  table?: string[];    // Tornar opcional para evitar erro
 };
 
-type Files = {
+// Definição de tipos para os campos e arquivos
+type CustomFields = {
+  database?: string[];
+  table?: string[];
+};
+
+type CustomFiles = {
   file: {
     filepath: string;
     originalFilename: string;
@@ -24,8 +24,8 @@ type Files = {
 };
 
 // Verifique se as propriedades existem
-const isFields = (fields: any): fields is Fields => {
-  return fields && Array.isArray(fields.database) && Array.isArray(fields.table);
+const isCustomFields = (fields: Fields): fields is CustomFields => {
+  return fields && typeof fields === 'object' && 'database' in fields && 'table' in fields;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const form = new IncomingForm();
-    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
+    const [fields, files]: [CustomFields, CustomFiles] = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) return reject(err);
         resolve([fields, files]);
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // Verifique se fields contém as propriedades necessárias
-    if (!isFields(fields)) {
+    if (!isCustomFields(fields)) {
       return res.status(400).json({ message: 'Invalid fields format' });
     }
 
@@ -83,6 +83,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({ message: 'File uploaded successfully' });
   } catch (error) {
     console.error('Error uploading file:', error);
-    res.status(500).json({ message: 'Error uploading file', error: error.message });
+    res.status(500).json({ message: 'Error uploading file', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
