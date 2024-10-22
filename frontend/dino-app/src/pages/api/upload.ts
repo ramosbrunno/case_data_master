@@ -40,7 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Invalid fields format' });
     }
 
-    const file = files.file ? (files.file as { filepath: string; originalFilename: string })[0] : undefined; // O arquivo enviado
+    // Ajustar o tipo do arquivo, considerando que pode ser um array
+    const file = files.file instanceof Array ? files.file[0] : files.file; // O arquivo enviado
     const database = fields.database ? fields.database[0] : undefined; // O nome do banco de dados
     const table = fields.table ? fields.table[0] : undefined; // O nome da tabela
 
