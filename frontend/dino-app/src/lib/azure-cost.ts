@@ -27,9 +27,6 @@ export async function getCostFromAzure(): Promise<CostDetails> {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 30);
 
-  // Formatar datas para exibição (YYYY-MM-DD)
-  const formatDate = (date: Date) => date.toISOString().split("T")[0];
-
   try {
     // Consulta o uso e custo para o grupo de recursos
     const result: QueryResult = await client.query.usage(
@@ -38,8 +35,8 @@ export async function getCostFromAzure(): Promise<CostDetails> {
         type: "ActualCost",
         timeframe: "Custom",
         timePeriod: {
-          from: formatDate(startDate),
-          to: formatDate(endDate),
+          from: startDate, // Enviando como Date
+          to: endDate,     // Enviando como Date
         },
         dataSet: {
           granularity: "None",
@@ -59,7 +56,7 @@ export async function getCostFromAzure(): Promise<CostDetails> {
       return {
         totalCost: parseFloat(cost as string),
         currency: currency as string,
-        timeframe: `${formatDate(startDate)} to ${formatDate(endDate)}`, // Apenas formatar para exibição
+        timeframe: `${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`, // Usando objetos Date para exibição
       };
     } else {
       throw new Error("No cost data available");
