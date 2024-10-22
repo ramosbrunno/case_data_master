@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-blob";
-import { IncomingForm, Fields } from 'formidable';
+import { IncomingForm, Fields, Files } from 'formidable';
 import fs from 'fs';
 
 // Configuração para desativar o bodyParser do Next.js
@@ -10,17 +10,10 @@ export const config = {
   },
 };
 
-// Definição de tipos para os campos e arquivos
+// Definição de tipos personalizados para os campos
 type CustomFields = {
   database?: string[];
   table?: string[];
-};
-
-type CustomFiles = {
-  file: {
-    filepath: string;
-    originalFilename: string;
-  }[];
 };
 
 // Verifique se as propriedades existem
@@ -35,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const form = new IncomingForm();
-    const [fields, files]: [CustomFields, CustomFiles] = await new Promise((resolve, reject) => {
+    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) return reject(err);
         resolve([fields, files]);
@@ -47,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Invalid fields format' });
     }
 
-    const file = files.file[0]; // O arquivo enviado
+    const file = files.file ? (files.file as { filepath: string; originalFilename: string })[0] : undefined; // O arquivo enviado
     const database = fields.database ? fields.database[0] : undefined; // O nome do banco de dados
     const table = fields.table ? fields.table[0] : undefined; // O nome da tabela
 
