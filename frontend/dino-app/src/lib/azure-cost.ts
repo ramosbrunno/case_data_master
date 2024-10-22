@@ -8,7 +8,7 @@ interface CostDetails {
 }
 
 export async function getCostFromAzure(): Promise<CostDetails> {
-  // Carregar os detalhes da subscrição do Azure a partir de variáveis de ambiente
+  // Substitua pelos detalhes reais da sua assinatura e grupo de recursos do Azure
   const subscriptionId = process.env.AZURE_SUBSCRIPTION_ID;
   const resourceGroupName = process.env.AZURE_RESOURCE_GROUP_NAME;
 
@@ -16,19 +16,19 @@ export async function getCostFromAzure(): Promise<CostDetails> {
     throw new Error("Azure subscription details are not properly configured");
   }
 
-  // Usar DefaultAzureCredential para autenticar
+  // Use DefaultAzureCredential, que tenta múltiplos métodos de autenticação
   const credential = new DefaultAzureCredential();
 
-  // Criar o cliente de Cost Management sem o subscriptionId
-  const client = new CostManagementClient(credential);
+  // Crie um cliente de gerenciamento de custos
+  const client = new CostManagementClient(credential, subscriptionId);
 
   // Obter a data atual e a data de 30 dias atrás
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 30);
 
-  // Formatar as datas como "YYYY-MM-DD"
-  const formatDate = (date: Date) => date.toISOString().split('T')[0];
+  // Formatar datas para exibição (YYYY-MM-DD)
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
 
   try {
     // Consulta o uso e custo para o grupo de recursos
@@ -38,8 +38,8 @@ export async function getCostFromAzure(): Promise<CostDetails> {
         type: "ActualCost",
         timeframe: "Custom",
         timePeriod: {
-          from: formatDate(startDate),
-          to: formatDate(endDate),
+          from: startDate, // Passar como Date
+          to: endDate,     // Passar como Date
         },
         dataSet: {
           granularity: "None",
@@ -59,7 +59,7 @@ export async function getCostFromAzure(): Promise<CostDetails> {
       return {
         totalCost: parseFloat(cost as string),
         currency: currency as string,
-        timeframe: `${formatDate(startDate)} to ${formatDate(endDate)}`,
+        timeframe: `${formatDate(startDate)} to ${formatDate(endDate)}`, // Apenas formatar para exibição
       };
     } else {
       throw new Error("No cost data available");
