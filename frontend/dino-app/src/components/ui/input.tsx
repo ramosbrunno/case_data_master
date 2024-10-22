@@ -1,11 +1,11 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-// Desabilitar a regra de ESLint para esta interface vazia
-/* eslint-disable @typescript-eslint/no-empty-interface */
+// Desativar a regra para todo o arquivo
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
-/* eslint-enable @typescript-eslint/no-empty-interface */
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
