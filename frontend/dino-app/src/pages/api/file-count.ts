@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const prefix = `${database}/${table}/`
     
     let fileCount = 0
-    for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+    for await (const { name } of containerClient.listBlobsFlat({ prefix })) {
       fileCount++
     }
 

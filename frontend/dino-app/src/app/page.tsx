@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -59,7 +59,6 @@ export default function DataIngestionPortal() {
     setUploading(true)
     setUploadProgress(0)
     let uploadedSize = 0
-    let allUploadsSuccessful = true // Flag to track success
 
     for (const file of files) {
       try {
@@ -72,11 +71,9 @@ export default function DataIngestionPortal() {
             description: `${file.name} was successfully uploaded to ${database}.${table}.`,
           })
         } else {
-          allUploadsSuccessful = false // Mark as failed if any file fails
           throw new Error(result.error || "Unknown error occurred during upload")
         }
       } catch (error) {
-        allUploadsSuccessful = false // Mark as failed if an exception occurs
         console.error(`Failed to upload ${file.name}:`, error)
         toast({
           title: "Upload Failed",
