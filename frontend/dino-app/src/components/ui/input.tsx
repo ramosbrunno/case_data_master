@@ -1,6 +1,9 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+// Desativar a regra para todo o arquivo
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 

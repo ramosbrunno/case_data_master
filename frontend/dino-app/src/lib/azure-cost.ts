@@ -1,7 +1,7 @@
 interface CostDetails {
-  totalCost: number
-  currency: string
-  timeframe: string
+  totalCost: number;
+  currency: string;
+  timeframe: string;
 }
 
 export async function getCostFromAzure(): Promise<CostDetails> {
