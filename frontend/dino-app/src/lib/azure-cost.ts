@@ -1,6 +1,3 @@
-import { DefaultAzureCredential } from "@azure/identity";
-import { CostManagementClient, QueryResult } from "@azure/arm-costmanagement";
-
 interface CostDetails {
   totalCost: number;
   currency: string;
@@ -8,65 +5,18 @@ interface CostDetails {
 }
 
 export async function getCostFromAzure(): Promise<CostDetails> {
-  // Substitua pelos detalhes reais da sua assinatura e grupo de recursos do Azure
-  const subscriptionId = process.env.AZURE_SUBSCRIPTION_ID;
-  const resourceGroupName = process.env.AZURE_RESOURCE_GROUP_NAME;
-
-  if (!subscriptionId || !resourceGroupName) {
-    throw new Error("Azure subscription details are not properly configured");
-  }
-
-  // Use DefaultAzureCredential, que tenta múltiplos métodos de autenticação
-  const credential = new DefaultAzureCredential();
-
-  // Crie um cliente de gerenciamento de custos
-  const client = new CostManagementClient(credential);
-
-  // Obter a data atual e a data de 30 dias atrás
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 30);
-
   try {
-    // Consulta o uso e custo para o grupo de recursos
-    const result: QueryResult = await client.query.usage(
-      `/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}`,
-      {
-        type: "ActualCost",
-        timeframe: "Custom",
-        timePeriod: {
-          from: startDate, // Enviando como Date
-          to: endDate,     // Enviando como Date
-        },
-        dataset: {  // Corrigido de dataSet para dataset
-          granularity: "None",
-          aggregation: {
-            totalCost: {
-              name: "Cost",
-              function: "Sum",
-            },
-          },
-        },
-      }
-    );
-
-    // Verifica se há dados e extrai as informações de custo
-    if (result.rows && result.rows.length > 0) {
-      const [cost, currency] = result.rows[0];
-      return {
-        totalCost: parseFloat(cost as string),
-        currency: currency as string,
-        timeframe: `${startDate.toISOString()} to ${endDate.toISOString()}`, // Usando objetos Date para exibição
-      };
-    } else {
-      throw new Error("No cost data available");
+    const response = await fetch('/api/cost')
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to fetch cost data')
     }
-  } catch (error: unknown) {
-    console.error("Error fetching cost data:", error);
-    throw new Error(
-      `Failed to retrieve cost data: ${
-        error instanceof Error ? error.message : "Unknown error occurred"
-      }`
-    );
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error fetching cost data:", error)
+    throw new Error(`Failed to retrieve cost data: ${error instanceof Error ? error.message : "Unknown error occurred"}`)
   }
 }

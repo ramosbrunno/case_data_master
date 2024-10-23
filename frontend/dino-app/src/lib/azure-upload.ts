@@ -37,3 +37,20 @@ export async function uploadToBlob(file: File, database: string, table: string):
     }
   }
 }
+
+export async function getFileCount(database: string, table: string): Promise<number> {
+  try {
+    const response = await fetch(`/api/file-count?database=${encodeURIComponent(database)}&table=${encodeURIComponent(table)}`)
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to fetch file count')
+    }
+
+    const data = await response.json()
+    return data.fileCount
+  } catch (error) {
+    console.error("Error fetching file count:", error)
+    throw new Error(`Failed to retrieve file count: ${error instanceof Error ? error.message : "Unknown error occurred"}`)
+  }
+}
