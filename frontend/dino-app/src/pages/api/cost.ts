@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Use ClientSecretCredential instead of DefaultAzureCredential
     const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-    const client = new CostManagementClient(credential, subscriptionId);
+    const client = new CostManagementClient(credential);
 
     const endDate = new Date();
     const startDate = new Date();
