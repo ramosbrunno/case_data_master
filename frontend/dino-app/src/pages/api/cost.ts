@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { ClientSecretCredential } from "@azure/identity";
 import { CostManagementClient } from "@azure/arm-costmanagement";
 
