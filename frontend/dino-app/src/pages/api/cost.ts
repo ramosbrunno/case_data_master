@@ -31,18 +31,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const scope = `/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}`;
 
     const result = await client.query.usage(scope, {
-        type: "ActualCost",
-        timeframe: "Custom",
-        timePeriod: {
-            from: startDate, // Enviando como Date
-            to: endDate,     // Enviando como Date
-        },
-        dataset: {  // Corrigido de dataSet para dataset
-            granularity: "None",
-            aggregation: {
-            totalCost: {
-                name: "Cost",
-                function: "Sum",
+      type: "ActualCost",
+      timeframe: "Custom",
+      timePeriod: {
+        from: startDate, // Enviando como Date
+        to: endDate,     // Enviando como Date
+      },
+      dataset: {  // Corrigido de dataSet para dataset
+        granularity: "None",
+        aggregation: {
+          totalCost: {
+            name: "Cost",
+            function: "Sum",
           }
         }
       }
@@ -60,6 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (error) {
     console.error("Error fetching cost data:", error);
-    res.status(500).json({ message: 'Error fetching cost data', error: error.message });
+    const errorMessage = (error as Error).message || 'Unknown error'; // Alterado aqui
+    res.status(500).json({ message: 'Error fetching cost data', error: errorMessage });
   }
 }
