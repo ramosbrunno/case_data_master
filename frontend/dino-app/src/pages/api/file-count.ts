@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const prefix = `${database}/${table}/`
     
     let fileCount = 0
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const { name } of containerClient.listBlobsFlat({ prefix })) {
       fileCount++
     }
