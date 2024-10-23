@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Upload, DollarSign, FileText, HardDrive, X } from 'lucide-react'
-import { uploadToBlob } from '@/lib/azure-upload'
+import { uploadToBlob, getFileCount } from '@/lib/azure-upload'
 import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
 
@@ -28,6 +28,23 @@ export default function DataIngestionPortal() {
       setFiles(Array.from(event.target.files))
     }
   }
+  
+  const updateFileCount = async () => {
+    if (database && table) {
+      try {
+        const count = await getFileCount(database, table)
+        setTotalFiles(count)
+      } catch (error) {
+        console.error("Failed to fetch file count:", error)
+        toast({
+          title: "File Count Fetch Failed",
+          description: `Unable to retrieve the latest file count: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+          variant: "destructive",
+        })
+      }
+    }
+  }
+
 
   const handleUpload = async () => {
     if (!database || !table) {
@@ -41,24 +58,25 @@ export default function DataIngestionPortal() {
 
     setUploading(true)
     setUploadProgress(0)
-    let uploadedFiles = 0
     let uploadedSize = 0
+    let allUploadsSuccessful = true // Flag to track success
 
     for (const file of files) {
       try {
         const result = await uploadToBlob(file, database, table)
         if (result.success) {
-          uploadedFiles++
           uploadedSize += result.size
-          setUploadProgress((uploadedFiles / files.length) * 100)
+          setUploadProgress((prev) => prev + (1 / files.length) * 100)
           toast({
             title: "File Uploaded",
             description: `${file.name} was successfully uploaded to ${database}.${table}.`,
           })
         } else {
+          allUploadsSuccessful = false // Mark as failed if any file fails
           throw new Error(result.error || "Unknown error occurred during upload")
         }
       } catch (error) {
+        allUploadsSuccessful = false // Mark as failed if an exception occurs
         console.error(`Failed to upload ${file.name}:`, error)
         toast({
           title: "Upload Failed",
@@ -68,10 +86,12 @@ export default function DataIngestionPortal() {
       }
     }
 
-    setTotalFiles(prev => prev + uploadedFiles)
     setTotalSize(prev => prev + uploadedSize)
     setUploading(false)
     setFiles([])
+    
+    // Update file count after upload
+    await updateFileCount()
 
     // Get updated cost
     try {

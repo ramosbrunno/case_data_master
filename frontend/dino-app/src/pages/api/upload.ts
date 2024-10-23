@@ -3,6 +3,9 @@ import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-bl
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
 
+console.info(process.env.AZURE_STORAGE_ACCOUNT_NAME)
+console.info(process.env.AZURE_STORAGE_ACCOUNT_KEY)
+console.info(process.env.AZURE_STORAGE_CONTAINER_NAME)
 
 // Configuração para desativar o bodyParser do Next.js
 export const config = {
