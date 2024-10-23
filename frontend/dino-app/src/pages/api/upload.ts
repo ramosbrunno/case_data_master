@@ -1,18 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { BlobServiceClient, StorageSharedKeyCredential } from "@azure/storage-blob";
-import { IncomingForm } from 'formidable';
+import { IncomingForm, Fields, Files } from 'formidable';
 import fs from 'fs';
-
-console.info(process.env.AZURE_STORAGE_ACCOUNT_NAME)
-console.info(process.env.AZURE_STORAGE_ACCOUNT_KEY)
-console.info(process.env.AZURE_STORAGE_CONTAINER_NAME)
 
 // Configuração para desativar o bodyParser do Next.js
 export const config = {
   api: {
     bodyParser: false,
   },
-}
+};
+
+// Definição de tipos personalizados para os campos
+type CustomFields = {
+  database?: string[];
+  table?: string[];
+};
+
+// Verifique se as propriedades existem
+const isCustomFields = (fields: Fields): fields is CustomFields => {
+  return fields && typeof fields === 'object' && 'database' in fields && 'table' in fields;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -21,16 +28,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const form = new IncomingForm();
-    const [fields, files] = await new Promise((resolve, reject) => {
+    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) return reject(err);
         resolve([fields, files]);
       });
     });
 
-    const file = files.file[0]; // O arquivo enviado
-    const database = fields.database[0]; // O nome do banco de dados
-    const table = fields.table[0]; // O nome da tabela
+    // Verifique se fields contém as propriedades necessárias
+    if (!isCustomFields(fields)) {
+      return res.status(400).json({ message: 'Invalid fields format' });
+    }
+
+    // Ajustar o tipo do arquivo, considerando que pode ser um array
+    const file = files.file instanceof Array ? files.file[0] : files.file; // O arquivo enviado
+    const database = fields.database ? fields.database[0] : undefined; // O nome do banco de dados
+    const table = fields.table ? fields.table[0] : undefined; // O nome da tabela
 
     if (!file || !database || !table) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -64,6 +77,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({ message: 'File uploaded successfully' });
   } catch (error) {
     console.error('Error uploading file:', error);
-    res.status(500).json({ message: 'Error uploading file', error: error.message });
+    res.status(500).json({ message: 'Error uploading file', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
