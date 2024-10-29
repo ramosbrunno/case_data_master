@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Upload, DollarSign, FileText, HardDrive, X } from 'lucide-react'
-import { uploadToBlob, getFileCount } from '@/lib/azure-upload'
+import { uploadToBlob, getFileCount, getTotalDataIngested } from '@/lib/azure-upload'
 import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
 
@@ -45,6 +45,25 @@ export default function DataIngestionPortal() {
     }
   }
 
+  const updateTotalDataIngested = async () => {
+    if (database && table) {
+      try {
+        const totalData = await getTotalDataIngested(database, table)
+        setTotalSize(totalData)
+        toast({
+          title: "Data Ingested Updated",
+          description: `Total data ingested: ${(totalData / (1024 * 1024 )).toFixed(2)} MB`,
+        })
+      } catch (error) {
+        console.error("Failed to fetch total data ingested:", error)
+        toast({
+          title: "Data Ingested Fetch Failed",
+          description: `Unable to retrieve the total data ingested: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+          variant: "destructive",
+        })
+      }
+    }
+  }
 
   const handleUpload = async () => {
     if (!database || !table) {
@@ -87,8 +106,9 @@ export default function DataIngestionPortal() {
     setUploading(false)
     setFiles([])
     
-    // Update file count after upload
+    // Update file count and total data ingested after upload
     await updateFileCount()
+    await updateTotalDataIngested()
 
     // Get updated cost
     try {
