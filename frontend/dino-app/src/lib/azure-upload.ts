@@ -54,3 +54,20 @@ export async function getFileCount(database: string, table: string): Promise<num
     throw new Error(`Failed to retrieve file count: ${error instanceof Error ? error.message : "Unknown error occurred"}`)
   }
 }
+
+export async function getTotalDataIngested(database: string, table: string): Promise<number> {
+  try {
+    const response = await fetch(`/api/total-data?database=${encodeURIComponent(database)}&table=${encodeURIComponent(table)}`)
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to fetch total data ingested')
+    }
+
+    const data = await response.json()
+    return data.totalSize
+  } catch (error) {
+    console.error("Error fetching total data ingested:", error)
+    throw new Error(`Failed to retrieve total data ingested: ${error instanceof Error ? error.message : "Unknown error occurred"}`)
+  }
+}
