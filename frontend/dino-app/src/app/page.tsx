@@ -9,6 +9,7 @@ import { Upload, DollarSign, FileText, HardDrive, X } from 'lucide-react'
 import { uploadToBlob, getFileCount, getTotalDataIngested } from '@/lib/azure-upload'
 import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
+import submitJobHandler from '@/lib/submit-job'
 
 export default function DataIngestionPortal() {
   const [files, setFiles] = useState<File[]>([])
@@ -52,7 +53,7 @@ export default function DataIngestionPortal() {
         setTotalSize(totalData)
         toast({
           title: "Data Ingested Updated",
-          description: `Total data ingested: ${(totalData / (1024 * 1024 )).toFixed(2)} MB`,
+          description: `Total data ingested: ${(totalData / (1024 * 1024)).toFixed(2)} MB`,
         })
       } catch (error) {
         console.error("Failed to fetch total data ingested:", error)
@@ -110,6 +111,55 @@ export default function DataIngestionPortal() {
     await updateFileCount()
     await updateTotalDataIngested()
 
+    // Submit job to Databricks after successful upload
+    try {
+      const response = await fetch('/api/submitJob', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          run_name: "Data Ingestion Non Optimized",
+            tasks: [
+              {
+                task_key: "DINO",
+                description: "Ingestao",
+                notebook_task: {
+                  base_parameters: {
+                    database_name: database, 
+                    table_name: table 
+                  },
+                  notebook_path: "/Users/brunno.ramos@live.com/DINO_teste" 
+                }
+              }
+            ],
+            run_as: {
+              service_principal_name: "8541a6b4-fa5d-4897-bd76-8c4399ba1792" 
+            }
+        }
+      ),
+      });
+    
+      if (!response.ok) {
+        throw new Error(`Failed to submit job: ${response.statusText}`);
+      }
+    
+      const data = await response.json();
+      toast({
+        title: "Job Submitted",
+        description: "Databricks job was submitted successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to submit job:", error);
+      toast({
+        title: "Job Submission Failed",
+        description: `Unable to submit Databricks job: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+        variant: "destructive",
+      });
+    }
+    
+    
+
     // Get updated cost
     try {
       const costDetails = await getCostFromAzure()
@@ -132,7 +182,7 @@ export default function DataIngestionPortal() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">DINO - Data Ingestion Non Optmized</h1>
+      <h1 className="text-2xl font-bold mb-4">DINO - Data Ingestion Non Optimized</h1>
       
       <Card className="mb-4">
         <CardHeader>
@@ -203,7 +253,7 @@ export default function DataIngestionPortal() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Ingested</CardTitle>
+            <CardTitle>Total Data Ingested</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
