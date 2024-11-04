@@ -51,7 +51,7 @@ export default async function handler(req: SubmitJobRequest, res: NextApiRespons
     },
   };
 
-  const url = `${process.env.DATABRICKS_INSTANCE}/api/2.1/jobs/runs/submit`;
+  const url = `${process.env.DATABRICKS_INSTANCE}/api/2.1/jobs/runs/submi`;
   const headers = {
     "Authorization": `Bearer ${process.env.DATABRICKS_TOKEN}`, 
     "Content-Type": "application/json"

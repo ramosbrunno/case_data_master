@@ -11,7 +11,12 @@ export async function uploadToBlob(file: File, database: string, table: string):
     formData.append('database', database)
     formData.append('table', table)
 
-    const response = await fetch('/api/upload', {
+    // const response = await fetch('/api/upload', {
+    //   method: 'POST',
+    //   body: formData,
+    // })
+
+    const response = await fetch('/api/upload-adls', {
       method: 'POST',
       body: formData,
     })
