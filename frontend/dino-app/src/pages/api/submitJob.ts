@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { NextApiRequest, NextApiResponse } from 'next'; // Importa tipos para requisições e respostas da API Next.js
 
 // Interface para a requisição de submissão de job
@@ -24,7 +26,7 @@ interface SubmitJobRequest extends NextApiRequest {
 // Interface para a resposta da API
 interface ApiResponse {
   message?: string; // Mensagem opcional
-  data?: any; // Dados opcionais da resposta // eslint-disable-line @typescript-eslint/no-explicit-any
+  data?: any; // Dados opcionais da resposta 
   error?: string; // Mensagem de erro opcional
   details?: string; // Detalhes do erro opcional
 }

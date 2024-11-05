@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Tipagem para SubmitJobRequest
 // Define a estrutura da requisição recebida pela API
 interface SubmitJobRequest extends NextApiRequest {
@@ -13,7 +14,7 @@ interface SubmitJobRequest extends NextApiRequest {
 // Define a estrutura de resposta para a API
 interface ApiResponse {
   message?: string;   // Mensagem de sucesso
-  data?: any;         // Dados retornados da API Databricks // eslint-disable-line @typescript-eslint/no-explicit-any
+  data?: any;         // Dados retornados da API Databricks
   error?: string;     // Mensagem de erro, se ocorrer
   details?: string;   // Detalhes adicionais sobre o erro
 }
