@@ -53,15 +53,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Campos obrigatórios ausentes' }); // Retorna erro 400 se faltar campos obrigatórios
     }
 
-    // Verifica se o arquivo é um TXT
-    if (file.originalFilename && !file.originalFilename.endsWith('.txt')) {
-      return res.status(400).json({ message: 'O arquivo deve ser um TXT' }); // Retorna erro 400 se o arquivo não for TXT
+    // Verifica se o arquivo é um CSV
+    if (file.originalFilename && !file.originalFilename.endsWith('.csv')) {
+      return res.status(400).json({ message: 'O arquivo deve ser um CSV' }); // Retorna erro 400 se o arquivo não for CSV
     }
 
     // Obtém as credenciais da conta de armazenamento do Azure a partir das variáveis de ambiente
-    const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-    const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
-    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+    const accountName = process.env.AZURE_ADLS_ACCOUNT_NAME;
+    const accountKey = process.env.AZURE_ADLS_ACCOUNT_KEY;
+    const containerName = process.env.AZURE_ADLS_CONTAINER_NAME;
 
     // Verifica se as credenciais da conta de armazenamento estão configuradas corretamente
     if (!accountName || !accountKey || !containerName) {
@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
     // Cria um cliente de serviço Blob com o endpoint de blob
     const blobServiceClient = new BlobServiceClient(
-      `https://${accountName}.blob.core.windows.net`,
+      `https://${accountName}.blob.core.windows.net`, 
       sharedKeyCredential
     );
 
@@ -83,8 +83,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Lê o conteúdo do arquivo enviado
     const fileBuffer = fs.readFileSync(file.filepath);
-    // Realiza o upload do arquivo
-    await blobClient.upload(fileBuffer, fileBuffer.length);
+    
+    // Upload do arquivo com cabeçalhos explícitos
+    await blobClient.uploadData(fileBuffer, {
+      blobHTTPHeaders: {
+        blobContentType: "text/plain", // Define o tipo de conteúdo do blob
+        blobType: "BlockBlob" // Define o tipo do blob explicitamente
+      }
+    });
 
     // Retorna a resposta informando que o upload foi bem-sucedido
     res.status(200).json({ message: 'Arquivo enviado com sucesso' });
