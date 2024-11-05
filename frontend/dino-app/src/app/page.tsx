@@ -1,5 +1,6 @@
 'use client'
 
+// Importação das dependências e componentes necessários
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,7 +12,12 @@ import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
 import submitJobHandler from '@/lib/submit-job'
 
+// Função principal do componente DataIngestionPortal
+// Descrição: Componente que gerencia a interface de ingestão de dados no Azure, 
+// permitindo ao usuário fazer upload de arquivos e visualizar informações de custo, 
+// número de arquivos e total de dados ingeridos.
 export default function DataIngestionPortal() {
+  // Declaração dos estados utilizados no componente
   const [files, setFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -24,53 +30,57 @@ export default function DataIngestionPortal() {
   const [table, setTable] = useState('')
   const { toast, toasts, dismissToast } = useToast()
 
+  // Função para capturar os arquivos selecionados pelo usuário
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFiles(Array.from(event.target.files))
     }
   }
   
+ // Função para atualizar a contagem de arquivos no Azure
   const updateFileCount = async () => {
     if (database && table) {
       try {
         const count = await getFileCount(database, table)
         setTotalFiles(count)
       } catch (error) {
-        console.error("Failed to fetch file count:", error)
+        console.error("Falha ao buscar a contagem de arquivos:", error)
         toast({
-          title: "File Count Fetch Failed",
-          description: `Unable to retrieve the latest file count: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+          title: "Falha na Contagem de Arquivos",
+          description: `Não foi possível obter a contagem mais recente de arquivos: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
           variant: "destructive",
         })
       }
     }
   }
 
+  // Função para atualizar o total de dados ingeridos
   const updateTotalDataIngested = async () => {
     if (database && table) {
       try {
         const totalData = await getTotalDataIngested(database, table)
         setTotalSize(totalData)
         toast({
-          title: "Data Ingested Updated",
-          description: `Total data ingested: ${(totalData / (1024 * 1024)).toFixed(2)} MB`,
+          title: "Dados Ingeridos Atualizados",
+          description: `Total de dados ingeridos: ${(totalData / (1024 * 1024)).toFixed(2)} MB`,
         })
       } catch (error) {
-        console.error("Failed to fetch total data ingested:", error)
+        console.error("Falha ao buscar o total de dados ingeridos:", error)
         toast({
-          title: "Data Ingested Fetch Failed",
-          description: `Unable to retrieve the total data ingested: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+          title: "Falha na Busca de Dados Ingeridos",
+          description: `Não foi possível obter o total de dados ingeridos: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
           variant: "destructive",
         })
       }
     }
   }
 
+  // Função para realizar o upload dos arquivos selecionados
   const handleUpload = async () => {
     if (!database || !table) {
       toast({
-        title: "Missing Information",
-        description: "Please provide both Database and Table names.",
+        title: "Informações Ausentes",
+        description: "Por favor, forneça os nomes do Banco de Dados e da Tabela.",
         variant: "destructive",
       })
       return
@@ -87,17 +97,17 @@ export default function DataIngestionPortal() {
           uploadedSize += result.size
           setUploadProgress((prev) => prev + (1 / files.length) * 100)
           toast({
-            title: "File Uploaded",
-            description: `${file.name} was successfully uploaded to ${database}.${table}.`,
+            title: "Arquivo Enviado",
+            description: `${file.name} foi enviado com sucesso para ${database}.${table}.`,
           })
         } else {
-          throw new Error(result.error || "Unknown error occurred during upload")
+          throw new Error(result.error || "Erro desconhecido durante o upload")
         }
       } catch (error) {
-        console.error(`Failed to upload ${file.name}:`, error)
+        console.error(`Falha ao enviar ${file.name}:`, error)
         toast({
-          title: "Upload Failed",
-          description: `Failed to upload ${file.name}: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+          title: "Falha no Upload",
+          description: `Falha ao enviar ${file.name}: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
           variant: "destructive",
         })
       }
@@ -107,11 +117,11 @@ export default function DataIngestionPortal() {
     setUploading(false)
     setFiles([])
     
-    // Update file count and total data ingested after upload
+    // Atualiza a contagem de arquivos e o total de dados ingeridos após o upload
     await updateFileCount()
     await updateTotalDataIngested()
 
-    // Submit job to Databricks after successful upload
+    // Submete um job ao Databricks após o upload
     try {
       const response = await fetch('/api/submitJob', {
         method: 'POST',
@@ -123,90 +133,88 @@ export default function DataIngestionPortal() {
             tasks: [
               {
                 task_key: "DINO",
-                description: "Ingestao",
+                description: "Ingestão",
                 notebook_task: {
                   base_parameters: {
                     database_name: database, 
                     table_name: table 
                   },
-                  notebook_path: "/Users/brunno.ramos@live.com/DINO_teste" 
+                  notebook_path: "/dino_workspace/DINO" 
                 }
               }
             ],
             run_as: {
               service_principal_name: "8541a6b4-fa5d-4897-bd76-8c4399ba1792" 
             }
-        }
-      ),
+        })
       });
     
       if (!response.ok) {
-        throw new Error(`Failed to submit job: ${response.statusText}`);
+        throw new Error(`Falha ao submeter job: ${response.statusText}`);
       }
     
       const data = await response.json();
       toast({
-        title: "Job Submitted",
-        description: "Databricks job was submitted successfully.",
+        title: "Job Submetido",
+        description: "Job do Databricks foi submetido com sucesso.",
       });
     } catch (error) {
-      console.error("Failed to submit job:", error);
+      console.error("Falha ao submeter job:", error);
       toast({
-        title: "Job Submission Failed",
-        description: `Unable to submit Databricks job: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+        title: "Falha na Submissão de Job",
+        description: `Não foi possível submeter o job para o Databricks: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
         variant: "destructive",
       });
     }
     
-    
-
-    // Get updated cost
+    // Atualiza o custo após o upload
     try {
       const costDetails = await getCostFromAzure()
       setCost(costDetails.totalCost)
       setCurrency(costDetails.currency)
       setCostTimeframe(costDetails.timeframe)
       toast({
-        title: "Cost Updated",
-        description: `Total cost for ${costDetails.timeframe}: ${costDetails.totalCost} ${costDetails.currency}`,
+        title: "Custo Atualizado",
+        description: `Custo total para ${costDetails.timeframe}: ${costDetails.totalCost} ${costDetails.currency}`,
       })
     } catch (error) {
-      console.error("Failed to fetch cost:", error)
+      console.error("Falha ao buscar custo:", error)
       toast({
-        title: "Cost Fetch Failed",
-        description: `Unable to retrieve the latest cost information: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+        title: "Falha na Busca de Custo",
+        description: `Não foi possível obter as informações mais recentes de custo: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
         variant: "destructive",
       })
     }
   }
 
+  // Interface de retorno do componente
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">DINO - Data Ingestion Non Optimized</h1>
       
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Upload Files to Azure</CardTitle>
+          <CardTitle>Upload de Arquivos para o Azure</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label htmlFor="database" className="block text-sm font-medium text-gray-700 mb-1">Database</label>
+              <label htmlFor="database" className="block text-sm font-medium text-gray-700 mb-1">Banco de Dados</label>
               <Input
                 id="database"
                 type="text"
-                placeholder="Enter database name"
+                placeholder="Insira o nome do banco de dados"
                 value={database}
                 onChange={(e) => setDatabase(e.target.value)}
                 className="w-full"
               />
             </div>
             <div>
-              <label htmlFor="table" className="block text-sm font-medium text-gray-700 mb-1">Table</label>
+              <label htmlFor="table" className="block text-sm font-medium text-gray-700 mb-1">Tabela</label>
               <Input
                 id="table"
                 type="text"
-                placeholder="Enter table name"
+                placeholder="Insira o nome da tabela"
                 value={table}
                 onChange={(e) => setTable(e.target.value)}
                 className="w-full"
@@ -223,10 +231,11 @@ export default function DataIngestionPortal() {
         </CardContent>
       </Card>
 
+{/* Cards informativos de custo, arquivos e dados ingeridos */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Ingestion Cost</CardTitle>
+            <CardTitle>Custo das Ingestões</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
@@ -234,14 +243,14 @@ export default function DataIngestionPortal() {
               <span className="text-2xl font-bold">{cost.toFixed(2)} {currency}</span>
             </div>
             <div className="text-sm text-muted-foreground mt-2">
-              Timeframe: {costTimeframe}
+              Período: {costTimeframe}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Files Ingested</CardTitle>
+            <CardTitle>Arquivos Ingeridos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
@@ -253,7 +262,7 @@ export default function DataIngestionPortal() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Total Data Ingested</CardTitle>
+            <CardTitle>Total de Dados Ingeridos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
@@ -264,7 +273,7 @@ export default function DataIngestionPortal() {
         </Card>
       </div>
 
-      {/* Toast messages */}
+      {/* Mensagens de Toast */}
       <div className="fixed bottom-0 right-0 p-6 space-y-4">
         {toasts.map((toast) => (
           <div
