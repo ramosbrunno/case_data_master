@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let fileCount = 0; // Inicializa o contador de arquivos
     // Itera sobre os blobs no contêiner que correspondem ao prefixo fornecido
-    for await (const { name } of containerClient.listBlobsFlat({ prefix })) {
+    for await (const { name } of containerClient.listBlobsFlat({ prefix })) { // eslint-disable-line @typescript-eslint/no-unused-vars
       fileCount++; // Incrementa o contador para cada blob encontrado
     }
 

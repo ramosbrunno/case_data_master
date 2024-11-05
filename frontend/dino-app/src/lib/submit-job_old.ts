@@ -13,7 +13,7 @@ interface SubmitJobRequest extends NextApiRequest {
 // Define a estrutura de resposta para a API
 interface ApiResponse {
   message?: string;   // Mensagem de sucesso
-  data?: any;         // Dados retornados da API Databricks
+  data?: any;         // Dados retornados da API Databricks // eslint-disable-line @typescript-eslint/no-explicit-any
   error?: string;     // Mensagem de erro, se ocorrer
   details?: string;   // Detalhes adicionais sobre o erro
 }

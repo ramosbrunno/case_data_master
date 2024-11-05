@@ -24,7 +24,7 @@ interface SubmitJobRequest extends NextApiRequest {
 // Interface para a resposta da API
 interface ApiResponse {
   message?: string; // Mensagem opcional
-  data?: any; // Dados opcionais da resposta
+  data?: any; // Dados opcionais da resposta // eslint-disable-line @typescript-eslint/no-explicit-any
   error?: string; // Mensagem de erro opcional
   details?: string; // Detalhes do erro opcional
 }
