@@ -85,12 +85,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const fileBuffer = fs.readFileSync(file.filepath);
     
     // Upload do arquivo com cabeçalhos explícitos
-    await blobClient.uploadData(fileBuffer, {
-      blobHTTPHeaders: {
-        blobContentType: "text/plain", // Define o tipo de conteúdo do blob
-        blobType: "BlockBlob" // Define o tipo do blob explicitamente
-      }
-    });
+    await blobClient.upload(fileBuffer, fileBuffer.length);
+    // await blobClient.uploadData(fileBuffer, {
+    //   blobHTTPHeaders: {
+    //     blobContentType: "text/plain", // Define o tipo de conteúdo do blob
+    //     blobType: "BlockBlob" // Define o tipo do blob explicitamente
+    //   }
+    // });
 
     // Retorna a resposta informando que o upload foi bem-sucedido
     res.status(200).json({ message: 'Arquivo enviado com sucesso' });
