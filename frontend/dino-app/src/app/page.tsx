@@ -12,7 +12,6 @@ import { Upload, DollarSign, FileText, HardDrive, X } from 'lucide-react'
 import { uploadToBlob, getFileCount, getTotalDataIngested } from '@/lib/azure-upload'
 import { getCostFromAzure } from '@/lib/azure-cost'
 import { useToast } from '@/hooks/use-toast'
-import submitJobHandler from '@/lib/submit-job'
 
 // Função principal do componente DataIngestionPortal
 // Descrição: Componente que gerencia a interface de ingestão de dados no Azure, 
